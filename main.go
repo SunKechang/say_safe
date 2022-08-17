@@ -9,10 +9,12 @@ import (
 	"gin-test/middleware"
 	"gin-test/scanner"
 	"gin-test/service/job"
+	"gin-test/util/flag"
 	"gin-test/util/log"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
+	"io"
 	"net/http"
 	"os"
 	"os/signal"
@@ -31,8 +33,11 @@ func main() {
 	if err != nil {
 		log.Log(fmt.Sprintf("start failed: %s\n", err))
 	}
-	r := gin.Default()
+
+	f, _ := os.Create(flag.LogPath)
+	gin.DefaultWriter = io.MultiWriter(f)
 	gin.SetMode(gin.ReleaseMode)
+	r := gin.Default()
 
 	store := cookie.NewStore([]byte("secret"))
 	//路由上加入session中间件
@@ -40,6 +45,7 @@ func main() {
 
 	r.POST("/signup", handler.SignUp())
 	r.POST("/login", handler.Login())
+	r.GET("/hello", handler.GetHello())
 
 	middleware.InitMiddlewares(r)
 	r.POST("/hello", handler.Hello())
@@ -50,10 +56,11 @@ func main() {
 	r.GET("/get_safe", handler.GetSafe())
 
 	srv := &http.Server{
-		Addr:    ":8080",
+		Addr:    "0.0.0.0:8080",
 		Handler: r,
 	}
 	go func() {
+		log.Logger("server started on: [%s]\n", srv.Addr)
 		if err := srv.ListenAndServe(); err != nil && errors.Is(err, http.ErrServerClosed) {
 			log.Logger("listen: %s\n", err)
 		}

@@ -14,5 +14,5 @@ func Log(text string) {
 }
 
 func Logger(format string, texts ...interface{}) {
-	fmt.Fprintf(gin.DefaultWriter, fmt.Sprint(format, texts))
+	fmt.Fprintf(gin.DefaultWriter, fmt.Sprintf(format, texts...))
 }

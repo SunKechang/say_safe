@@ -10,7 +10,18 @@ func Hello() func(*gin.Context) {
 		hello(context)
 	}
 }
+func GetHello() func(*gin.Context) {
+	return func(context *gin.Context) {
+		getHello(context)
+	}
+}
 func hello(c *gin.Context) {
+	res := response.NewResponse()
+	res[Message] = "hello"
+	c.JSON(res["code"].(int), res)
+}
+
+func getHello(c *gin.Context) {
 	res := response.NewResponse()
 	res[Message] = "hello"
 	c.JSON(res["code"].(int), res)

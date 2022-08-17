@@ -26,6 +26,7 @@ func Init() error {
 		log.Log(fmt.Sprintf("database exists error\n"))
 		return errors.New("gormDB not nil")
 	}
+	//172.17.0.2
 	host := "127.0.0.1"
 	port := "3306"
 	database := "bjfu"
@@ -40,6 +41,7 @@ func Init() error {
 		database,
 		charset,
 	)
+	log.Logger(address + "\n")
 	var err error
 	gormDB, err = gorm.Open(mysql.Open(address), &gorm.Config{})
 	if err != nil {
