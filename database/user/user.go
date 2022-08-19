@@ -43,7 +43,6 @@ func (p *UserDao) CreateUser(u *User) error {
 	if u.ID == "" {
 		u.ID = p.GetUUID()
 	}
-
 	q = q.Create(u)
 	return q.Error
 }

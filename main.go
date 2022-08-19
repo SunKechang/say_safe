@@ -56,7 +56,8 @@ func main() {
 	r.GET("/get_safe", handler.GetSafe())
 
 	srv := &http.Server{
-		Addr:    "0.0.0.0:8080",
+		//0.0.0.0:8080
+		Addr:    ":8080",
 		Handler: r,
 	}
 	go func() {

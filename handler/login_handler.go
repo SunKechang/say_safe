@@ -18,6 +18,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"path"
 	"strconv"
 	"strings"
 	"time"
@@ -128,14 +129,19 @@ func signup(c *gin.Context) {
 	defer c.JSON(res["code"].(int), res)
 	temp, err := io.ReadAll(c.Request.Body)
 	if err != nil {
-		log.Log(fmt.Sprintf("[LOGIN] failed: %s\n", err.Error()))
+		log.Log(fmt.Sprintf("[SIGNUP] failed: %s\n", err.Error()))
 	}
 	//转化为LoginRequest结构
 	body := SignUpRequest{}
 	err = json.Unmarshal(temp, &body)
+	if err != nil {
+		log.Logger("unmarshal failed: %s\n", err.Error())
+	}
 
+	log.Logger("signup body %v\n", body)
 	userDao := user.NewUserDao()
 	_, err = userDao.GetUserByID(body.UserName)
+	log.Logger("database %v\n", err)
 	if database.IsError(err) {
 		res["code"] = http.StatusInternalServerError
 		res[Message] = "数据库内部错误"
@@ -148,14 +154,17 @@ func signup(c *gin.Context) {
 	}
 
 	ltCode, sessionId := getLtSession()
+	log.Logger("ltcode %s\n", ltCode)
 	//todo 2.通过lt，user，password，基于des加密计算得到rsa
 	rsa := getRsa(body.UserName, body.Password, ltCode)
+	log.Logger("rsa: %s\n", rsa)
 	//todo 3.登录，获取sessionID，route
 	route, sessionId := getRoute(sessionId, rsa, ltCode, len(body.UserName), len(body.Password))
 	if len(route) == 0 {
 		res[Message] = "账号或密码错误"
 		return
 	}
+	log.Logger("route: %s, session: %s\n", route, sessionId)
 	newUser := user.User{
 		ID:       body.UserName,
 		UserName: "",
@@ -164,8 +173,10 @@ func signup(c *gin.Context) {
 		Class:    "",
 		IsMan:    0,
 	}
+	log.Logger("create user %v\n", newUser)
 	err = userDao.CreateUser(&newUser)
 	if err != nil {
+		log.Logger("create user %v\n", newUser)
 		res[Message] = err.Error()
 		return
 	}
@@ -174,9 +185,10 @@ func signup(c *gin.Context) {
 
 func getLtSession() (string, string) { //获取lt与sessionId
 	connectUrl := "http://cas.bjfu.edu.cn/cas/login?service=https%3A%2F%2Fs.bjfu.edu.cn%2Ftp_fp%2Findex.jsp"
+	log.Logger("connection url: %s\n", connectUrl)
 	request, err := http.NewRequest("GET", connectUrl, nil)
 	if err != nil {
-		fmt.Println(err)
+		log.Log(err.Error())
 	}
 	resp, err := http.DefaultClient.Do(request)
 	defer resp.Body.Close()
@@ -186,13 +198,14 @@ func getLtSession() (string, string) { //获取lt与sessionId
 	//从html中找到对应节点获取lt，其实lt只是用于后续计算rsa的一个随机值，lt值大概长这样：LT-753722-hCsoUZ4f4QmSmeqFzPDyCFtAUAMHnu-cas
 	doc, err := goquery.NewDocumentFromReader(resp.Body)
 	ltNode := doc.Find("#lt").Nodes[0]
+	log.Logger("ltNode: %v\n", ltNode)
 	return ltNode.Attr[3].Val, getSingleCookie(resp, JSESSIONID)
 }
 
 func getRsa(user, password, ltCode string) string { //计算rsa值，该值在登录时登录用得到
 	//rsa是通过用户名，密码，lt进行DES计算得到的值
 	//具体算法在strconv.js文件中，此处通过goja包跨语言调用了该方法
-	file, err := ioutil.ReadFile(flag.SafeRoot + "/strconv.js")
+	file, err := ioutil.ReadFile(path.Join(flag.SafeRoot + "/strconv.js"))
 	if err != nil {
 		fmt.Println(err)
 	}

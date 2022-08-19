@@ -27,11 +27,13 @@ func Init() error {
 		return errors.New("gormDB not nil")
 	}
 	//172.17.0.2
+	//Baidu@2022
+	//Pgone3123
 	host := "127.0.0.1"
 	port := "3306"
 	database := "bjfu"
 	username := "root"
-	password := "Baidu@2022"
+	password := "Pgone3123"
 	charset := "utf8"
 	address := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=%s&parseTime=true",
 		username,

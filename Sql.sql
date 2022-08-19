@@ -1,4 +1,6 @@
+create database bjfu;
 use bjfu;
+
 DROP TABLE IF EXISTS user;
 DROP TABLE IF EXISTS safe_log;
 DROP TABLE IF EXISTS safe_job;
