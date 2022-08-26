@@ -43,13 +43,12 @@
 </body>
 </html>
 <script>
-    var url = "http://localhost:8080"
     function toBeilin() {
         document.location.href = 'http://cas.bjfu.edu.cn/cas/login?service=https%3A%2F%2Fs.bjfu.edu.cn%2Ftp_fp%2Findex.jsp'
     }
     function signup() {
         let sign = new XMLHttpRequest()
-        let reqUrl = url + "/signup"
+        let reqUrl = "/signup"
         sign.open("POST", reqUrl)
         sign.onload = function () {
             let res_data = JSON.parse(sign.responseText)

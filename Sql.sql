@@ -53,3 +53,6 @@ set @@sql_mode = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_Z
 set @@global.sql_mode = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
 delete from user where id='191002213';
 
+insert into `safe_log` (`id`, `user_id`, `job_id`, `is_delete`, `result`)
+VALUES ('1', '191002213', '1', '0', '您今天已经申请了，不需要再次申请了');
+

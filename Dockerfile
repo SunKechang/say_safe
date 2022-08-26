@@ -5,8 +5,8 @@ WORKDIR /app
 COPY ./static ./static
 COPY ./templates ./templates
 COPY ./strconv.js .
-COPY ./main.exe .
-CMD ["ls"]
+COPY ./bjfu .
+RUN ["mkdir safeFiles"]
 EXPOSE 8080
 
-CMD ["./main.exe"]
+CMD ["./bjfu"]

@@ -1,4 +1,8 @@
 D:/GolangProjects/safeWeb/main.go:72 server started on: [[:8080]]
-[GIN] 2022/08/26 - 10:59:30 | 404 |            0s |             ::1 | GET      "/index"
-[GIN] 2022/08/26 - 10:59:34 | 200 |       653.5µs |             ::1 | GET      "/page/index"
-[GIN] 2022/08/26 - 10:59:34 | 200 |    129.8517ms |             ::1 | GET      "/static/nes.css/css/nes.min.css"
+[GIN] 2022/08/26 - 19:20:27 | 200 |            0s |             ::1 | GET      "/page/safe"
+[GIN] 2022/08/26 - 19:20:27 | 200 |      2.1697ms |             ::1 | GET      "/get_safe_list"
+D:/GolangProjects/safeWeb/service/safe/safe.go:280 GetSafe failed: record not found
+[GIN] 2022/08/26 - 19:20:27 | 200 |      5.3341ms |             ::1 | GET      "/get_safe"
+D:/GolangProjects/safeWeb/main.go:81 [main],app stopping,receive:[interrupt]
+D:/GolangProjects/safeWeb/main.go:74 listen: [http: Server closed]
+D:/GolangProjects/safeWeb/main.go:91 [main],app stopped,receive:[interrupt]

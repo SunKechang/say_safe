@@ -2,6 +2,7 @@ package handler
 
 import (
 	"fmt"
+	safe2 "gin-test/database/safe"
 	"gin-test/handler/response"
 	"gin-test/service/safe"
 	"gin-test/util/log"
@@ -24,6 +25,11 @@ func AddSafe() func(*gin.Context) {
 func GetSafe() func(*gin.Context) {
 	return func(context *gin.Context) {
 		getSafe(context)
+	}
+}
+func GetSafeList() func(*gin.Context) {
+	return func(context *gin.Context) {
+		getSafeList(context)
 	}
 }
 func saySafe(c *gin.Context) {
@@ -73,6 +79,21 @@ func getSafe(c *gin.Context) {
 	username := temp.(string)
 	service := safe.NewSafeService()
 	content, err := service.GetSafe(username)
+	if err != nil {
+		res[Message] = err.Error()
+		return
+	}
+	res["data"] = content
+}
+
+func getSafeList(c *gin.Context) {
+	res := response.NewResponse()
+	defer c.JSON(res["code"].(int), res)
+
+	temp, _ := c.Get(UserName)
+	username := temp.(string)
+	dao := safe2.NewSafeLogDao()
+	content, err := dao.GetSafeLog(username)
 	if err != nil {
 		res[Message] = err.Error()
 		return

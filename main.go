@@ -62,7 +62,7 @@ func main() {
 	r.POST("/add_safe", handler.AddSafe())
 	r.POST("/say_safe", handler.SaySafe())
 	r.GET("/get_safe", handler.GetSafe())
-
+	r.GET("/get_safe_list", handler.GetSafeList())
 	srv := &http.Server{
 		//0.0.0.0:8080
 		Addr:    ":8080",

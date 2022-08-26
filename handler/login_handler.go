@@ -7,7 +7,6 @@ import (
 	"gin-test/database"
 	"gin-test/database/user"
 	"gin-test/handler/response"
-	"gin-test/util/flag"
 	"gin-test/util/log"
 	"github.com/PuerkitoBio/goquery"
 	"github.com/dop251/goja"
@@ -180,6 +179,10 @@ func signup(c *gin.Context) {
 		res[Message] = err.Error()
 		return
 	}
+	session := sessions.Default(c)
+	session.Set(Role, User)
+	session.Set(UserName, body.UserName)
+	session.Set(Password, body.Password)
 	res[Message] = "注册成功"
 }
 
@@ -205,7 +208,7 @@ func getLtSession() (string, string) { //获取lt与sessionId
 func getRsa(user, password, ltCode string) string { //计算rsa值，该值在登录时登录用得到
 	//rsa是通过用户名，密码，lt进行DES计算得到的值
 	//具体算法在strconv.js文件中，此处通过goja包跨语言调用了该方法
-	file, err := ioutil.ReadFile(path.Join(flag.SafeRoot + "/strconv.js"))
+	file, err := ioutil.ReadFile(path.Join("./strconv.js"))
 	if err != nil {
 		fmt.Println(err)
 	}
