@@ -1,1 +1,4 @@
-server started on: [0.0.0.0:8080]
+D:/GolangProjects/safeWeb/main.go:72 server started on: [[:8080]]
+[GIN] 2022/08/26 - 10:59:30 | 404 |            0s |             ::1 | GET      "/index"
+[GIN] 2022/08/26 - 10:59:34 | 200 |       653.5µs |             ::1 | GET      "/page/index"
+[GIN] 2022/08/26 - 10:59:34 | 200 |    129.8517ms |             ::1 | GET      "/static/nes.css/css/nes.min.css"

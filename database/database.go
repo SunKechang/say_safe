@@ -43,7 +43,6 @@ func Init() error {
 		database,
 		charset,
 	)
-	log.Logger(address + "\n")
 	var err error
 	gormDB, err = gorm.Open(mysql.Open(address), &gorm.Config{})
 	if err != nil {

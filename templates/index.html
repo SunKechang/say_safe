@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SaySafe</title>
+    <link rel="stylesheet" href="/static/nes.css/css/nes.min.css">
+    <link rel="icon" href="/static/favicon.png">
+</head>
+<body>
+
+        <div class="container">
+            <section class="nes-container with-title">
+                <h3>BJFU 报平安</h3>
+                <div class="nes-field item" style="">
+                    <label for="name_field">姓名</label>
+                    <input type="text" id="name_field" class="nes-input">
+                </div>
+                <div class="nes-field" style="">
+                    <label for="password_field">密码</label>
+                    <input type="text" id="password_field" class="nes-input">
+                </div>
+                <div class="nes-field" style="margin-top: 1rem; display: flex; flex-direction: row">
+                    <div class="nes-field">
+                        <button type="button" class="nes-btn is-warning" style="margin-right: 1rem"
+                                onclick="clearInput()">清空</button>
+                        <button type="button" class="nes-btn is-success" style="margin-right: 1rem"
+                                onclick="login()">登录</button>
+                        <button type="button" class="nes-btn is-success" style="margin-right: 1rem"
+                            onclick="signup()">注册</button>
+                        <button type="button" class="nes-btn" style="margin-right: 1rem"
+                                id="test-button"
+                        onclick="toBeilin()">
+                            数字北林</button>
+                    </div>
+                    <div style="flex: 9">
+                        <progress id="test-pro" class="nes-progress is-pattern" value="50" max="100"
+                        style="display: none"></progress>
+                    </div>
+
+                </div>
+            </section>
+        </div>
+</body>
+</html>
+<script>
+    var url = "http://localhost:8080"
+    function toBeilin() {
+        document.location.href = 'http://cas.bjfu.edu.cn/cas/login?service=https%3A%2F%2Fs.bjfu.edu.cn%2Ftp_fp%2Findex.jsp'
+    }
+    function signup() {
+        let sign = new XMLHttpRequest()
+        let reqUrl = url + "/signup"
+        sign.open("POST", reqUrl)
+        sign.onload = function () {
+            let res_data = JSON.parse(sign.responseText)
+            if (res_data.code === 200 && res_data.message === "注册成功") {
+                document.location.href = "/page/safe"
+            } else {
+                alert(res_data.message)
+            }
+        }
+        let name = document.getElementById('name_field').value
+        let password = document.getElementById('password_field').value
+        const body = JSON.stringify({ username: name, password: password});
+        sign.send(body);
+    }
+
+    function login() {
+        let sign = new XMLHttpRequest()
+        let reqUrl = "/login"
+        sign.open("POST", reqUrl)
+        sign.onload = function () {
+            let res_data = JSON.parse(sign.responseText)
+            if (res_data.code === 200 && res_data.message === "login success") {
+                document.location.href = "/page/safe"
+            } else {
+                alert(res_data.message)
+            }
+        }
+        let name = document.getElementById('name_field').value
+        let password = document.getElementById('password_field').value
+        const body = JSON.stringify({ username: name, password: password});
+        sign.send(body);
+    }
+
+    function clearInput() {
+        document.getElementById('name_field').value = ''
+        document.getElementById('password_field').value = ''
+    }
+</script>
+
+<style>
+    .container {
+        width: 40rem;
+        margin: 5rem auto 0;
+
+    }
+</style>

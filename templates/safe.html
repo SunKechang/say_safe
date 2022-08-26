@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SaySafe</title>
+    <link rel="icon" href="/static/favicon.png">
+    <link rel="stylesheet" href="/static/nes.css/css/nes.min.css">
+</head>
+<body>
+    <div class="container">
+        <section class="nes-container with-title">
+            <h3>添加报平安任务</h3>
+            <div class="nes-field item" style="">
+                <label for="textarea_field">报平安内容</label>
+                <textarea id="textarea_field" class="nes-textarea" style="height: 10rem"></textarea>
+            </div>
+            <div class="nes-field" style="margin-top: 1rem; display: flex; flex-direction: row">
+                <div class="nes-field">
+                    <button type="button" class="nes-btn is-success" style="margin-right: 1rem"
+                            onclick="addSafe()">添加</button>
+                </div>
+            </div>
+        </section>
+    </div>
+</body>
+</html>
+
+<script>
+    let sign = new XMLHttpRequest()
+    let reqUrl = "/get_safe"
+    sign.open("GET", reqUrl)
+    sign.onload = function () {
+        let res_data = JSON.parse(sign.responseText)
+        console.log(res_data)
+        if (res_data.code === 200 && res_data.message === "record not found") {
+
+        }
+    }
+    sign.send();
+
+    function addSafe() {
+        let content = document.getElementById('textarea_field').value
+        let xmr = new XMLHttpRequest()
+        let reqUrl = "/add_safe"
+        xmr.open("POST", reqUrl)
+        xmr.onload = function () {
+            let res_data = JSON.parse(xmr.responseText)
+            console.log(res_data)
+        }
+        xmr.send(content);
+    }
+</script>
+
+<style>
+    .container {
+        width: 40rem;
+        margin: 5rem auto 0;
+    }
+</style>

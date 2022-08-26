@@ -217,6 +217,20 @@ func getSingleCookie(response *http.Response, goalName string) string { //从Coo
 
 func (p *SafeService) AddSafe(username string, safeInfo []byte) error {
 	// todo 将用户传递的报平安内容保存到root/学号/学号.txt
+	dirPath := path.Join(flag.SafeRoot, username)
+	if _, err := os.Stat(dirPath); err != nil {
+		if os.IsNotExist(err) {
+			err := os.Mkdir(dirPath, os.ModePerm)
+			if err != nil {
+				log.Logger("AddSafe create dir failed: %s\n", err.Error())
+				return err
+			}
+		} else {
+			log.Logger("AddSafe create dir failed: %s\n", err.Error())
+			return err
+		}
+	}
+
 	relaPath := path.Join(username, username+".txt")
 	filePath := path.Join(flag.SafeRoot, relaPath)
 	var file *os.File

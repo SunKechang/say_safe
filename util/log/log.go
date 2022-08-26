@@ -14,5 +14,8 @@ func Log(text string) {
 }
 
 func Logger(format string, texts ...interface{}) {
-	fmt.Fprintf(gin.DefaultWriter, fmt.Sprintf(format, texts...))
+	prefix := "%s:%d "
+	_, file, line, _ := runtime.Caller(1)
+	str := fmt.Sprintf(prefix+format, file, line, texts)
+	fmt.Fprintf(gin.DefaultWriter, str)
 }

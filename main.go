@@ -38,17 +38,25 @@ func main() {
 	gin.DefaultWriter = io.MultiWriter(f)
 	gin.SetMode(gin.ReleaseMode)
 	r := gin.Default()
+	r.LoadHTMLGlob("./templates/*")
+	r.Static("/static", "./static")
 
 	store := cookie.NewStore([]byte("secret"))
 	//路由上加入session中间件
 	r.Use(sessions.Sessions(UUID, store))
 
+	r.GET("/page/index", func(context *gin.Context) {
+		context.HTML(http.StatusOK, "index.html", nil)
+	})
+	r.GET("/page/safe", func(context *gin.Context) {
+		context.HTML(http.StatusOK, "safe.html", nil)
+	})
+
 	r.POST("/signup", handler.SignUp())
 	r.POST("/login", handler.Login())
 	r.GET("/hello", handler.GetHello())
-
-	middleware.InitMiddlewares(r)
 	r.POST("/hello", handler.Hello())
+	middleware.InitMiddlewares(r)
 	r.POST("/logout", handler.Logout())
 
 	r.POST("/add_safe", handler.AddSafe())
