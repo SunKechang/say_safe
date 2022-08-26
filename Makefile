@@ -13,4 +13,4 @@ run:
 	docker run -d -it -p 8080:8080 saysafe:latest
 
 mysql-start:
-	docker run --network=host -e MYSQL_ROOT_PASSWORD=Pgone3123 daff57b7d2d1
+	docker run -tid --name mysql --network=host -e MYSQL_ROOT_PASSWORD=Pgone3123 daff57b7d2d1
