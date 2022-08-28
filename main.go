@@ -48,8 +48,8 @@ func main() {
 	r.GET("/page/index", func(context *gin.Context) {
 		context.HTML(http.StatusOK, "index.html", nil)
 	})
-	r.GET("/page/safe", func(context *gin.Context) {
-		context.HTML(http.StatusOK, "safe.html", nil)
+	r.GET("/page/help", func(context *gin.Context) {
+		context.HTML(http.StatusOK, "help.html", nil)
 	})
 
 	r.POST("/signup", handler.SignUp())
@@ -63,6 +63,9 @@ func main() {
 	r.POST("/say_safe", handler.SaySafe())
 	r.GET("/get_safe", handler.GetSafe())
 	r.GET("/get_safe_list", handler.GetSafeList())
+	r.GET("/page/safe", func(context *gin.Context) {
+		context.HTML(http.StatusOK, "safe.html", nil)
+	})
 	srv := &http.Server{
 		//0.0.0.0:8080
 		Addr:    ":8080",

@@ -10,7 +10,7 @@
     <div class="container">
         <section class="nes-container with-title">
             <h3 id="addSafeHeader">添加报平安任务</h3>
-            <div class="nes-field item" style="">
+            <div class="nes-field item">
                 <label for="textarea_field">报平安内容</label>
                 <textarea id="textarea_field" class="nes-textarea" style="height: 10rem"></textarea>
             </div>
@@ -19,6 +19,13 @@
                     <button type="button" class="nes-btn is-success" style="margin-right: 1rem"
                             id="addButton"
                             onclick="addSafe()">添加</button>
+
+                    <button type="button" class="nes-btn is-warning" style="margin-right: 1rem"
+                            id="sayButton"
+                            onclick="saySafe()">手动报平安</button>
+                    <button type="button" class="nes-btn is-success" style="margin-right: 1rem"
+                            id="backButton"
+                            onclick="back()">登录页</button>
                 </div>
             </div>
         </section>
@@ -35,16 +42,6 @@
                     </tr>
                     </thead>
                     <tbody id="safeList">
-                    <tr>
-                        <td>Thou hast had a good morning</td>
-                        <td>Thou hast had a good afternoon</td>
-                        <td>Thou hast had a good evening</td>
-                    </tr>
-                    <tr>
-                        <td>Thou hast had a good morning</td>
-                        <td>Thou hast had a good afternoon</td>
-                        <td>Thou hast had a good afternoon</td>
-                    </tr>
                     </tbody>
                 </table>
             </div>
@@ -109,6 +106,24 @@
             }
         }
         xmr.send();
+    }
+
+    function saySafe() {
+        let xmr = new XMLHttpRequest()
+        let reqUrl = "/say_safe"
+        xmr.open("POST", reqUrl)
+        xmr.onload = function () {
+            let res_data = JSON.parse(xmr.responseText)
+            console.log(res_data)
+            if (res_data.code === 200) {
+                alert(res_data.message)
+            }
+        }
+        xmr.send();
+    }
+
+    function back() {
+        document.location.href = '/page/index'
     }
 </script>
 

@@ -1,8 +1,8 @@
-D:/GolangProjects/safeWeb/main.go:72 server started on: [[:8080]]
-[GIN] 2022/08/26 - 19:20:27 | 200 |            0s |             ::1 | GET      "/page/safe"
-[GIN] 2022/08/26 - 19:20:27 | 200 |      2.1697ms |             ::1 | GET      "/get_safe_list"
-D:/GolangProjects/safeWeb/service/safe/safe.go:280 GetSafe failed: record not found
-[GIN] 2022/08/26 - 19:20:27 | 200 |      5.3341ms |             ::1 | GET      "/get_safe"
-D:/GolangProjects/safeWeb/main.go:81 [main],app stopping,receive:[interrupt]
-D:/GolangProjects/safeWeb/main.go:74 listen: [http: Server closed]
-D:/GolangProjects/safeWeb/main.go:91 [main],app stopped,receive:[interrupt]
+D:/GolangProjects/safeWeb/main.go:75 server started on: [[:8080]]
+[GIN] 2022/08/28 - 21:54:56 | 200 |         294µs |             ::1 | GET      "/page/help"
+[GIN] 2022/08/28 - 21:54:56 | 304 |      1.7176ms |             ::1 | GET      "/static/images/last.jpg"
+[GIN] 2022/08/28 - 21:54:59 | 200 |         297µs |             ::1 | GET      "/page/index"
+[GIN] 2022/08/28 - 21:55:00 | 200 |       673.8µs |             ::1 | GET      "/page/help"
+D:/GolangProjects/safeWeb/main.go:84 [main],app stopping,receive:[interrupt]
+D:/GolangProjects/safeWeb/main.go:77 listen: [http: Server closed]
+D:/GolangProjects/safeWeb/main.go:94 [main],app stopped,receive:[interrupt]

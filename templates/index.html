@@ -31,6 +31,10 @@
                                 id="test-button"
                         onclick="toBeilin()">
                             数字北林</button>
+                        <button type="button" class="nes-btn" style="margin-right: 1rem"
+                                id="help-button"
+                                onclick="help()">
+                            帮助</button>
                     </div>
                     <div style="flex: 9">
                         <progress id="test-pro" class="nes-progress is-pattern" value="50" max="100"
@@ -86,12 +90,15 @@
         document.getElementById('name_field').value = ''
         document.getElementById('password_field').value = ''
     }
+
+    function help() {
+        window.open("/page/help")
+    }
 </script>
 
 <style>
     .container {
         width: 40rem;
         margin: 5rem auto 0;
-
     }
 </style>
