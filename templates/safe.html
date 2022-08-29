@@ -25,7 +25,7 @@
                             onclick="saySafe()">手动报平安</button>
                     <button type="button" class="nes-btn is-success" style="margin-right: 1rem"
                             id="backButton"
-                            onclick="back()">登录页</button>
+                            onclick="back()">退出</button>
                 </div>
             </div>
         </section>
@@ -51,20 +51,23 @@
 </html>
 
 <script>
-    let sign = new XMLHttpRequest()
-    let reqUrl = "/get_safe"
-    sign.open("GET", reqUrl)
-    sign.onload = function () {
-        let res_data = JSON.parse(sign.responseText)
-        if (res_data.code === 200 && res_data.data !== "") {
-            document.getElementById('textarea_field').value = res_data.data
-            document.getElementById('addSafeHeader').innerText = "更新报平安任务"
-            document.getElementById('addButton').innerText = "更新"
-        }
-    }
-    sign.send()
+    init()
     getSafeList()
 
+    function init() {
+        let sign = new XMLHttpRequest()
+        let reqUrl = "/get_safe"
+        sign.open("GET", reqUrl)
+        sign.onload = function () {
+            let res_data = JSON.parse(sign.responseText)
+            if (res_data.code === 200 && res_data.data !== "") {
+                document.getElementById('textarea_field').value = res_data.data
+                document.getElementById('addSafeHeader').innerText = "更新报平安任务"
+                document.getElementById('addButton').innerText = "更新"
+            }
+        }
+        sign.send()
+    }
     function addSafe() {
         document.getElementById('addButton').disabled = true
         let content = document.getElementById('textarea_field').value
@@ -80,6 +83,7 @@
             }
             document.getElementById('textarea_field').value = ''
             document.getElementById('addButton').removeAttribute("disabled")
+            init()
         }
         xmr.send(content);
     }
@@ -118,12 +122,25 @@
             if (res_data.code === 200) {
                 alert(res_data.message)
             }
+            getSafeList()
         }
         xmr.send();
     }
 
     function back() {
-        document.location.href = '/page/index'
+        let xmr = new XMLHttpRequest()
+        let reqUrl = "/logout"
+        xmr.open("POST", reqUrl)
+        xmr.onload = function () {
+            let res_data = JSON.parse(xmr.responseText)
+            if (res_data.code !== 200) {
+                alert(res_data.message)
+            } else {
+                document.location.href = "/page/index"
+            }
+
+        }
+        xmr.send();
     }
 </script>
 

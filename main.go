@@ -46,7 +46,12 @@ func main() {
 	r.Use(sessions.Sessions(UUID, store))
 
 	r.GET("/page/index", func(context *gin.Context) {
-		context.HTML(http.StatusOK, "index.html", nil)
+		_, ok := context.Get(handler.UserName)
+		if ok {
+			context.Redirect(http.StatusFound, "/page/safe")
+		} else {
+			context.HTML(http.StatusOK, "index.html", nil)
+		}
 	})
 	r.GET("/page/help", func(context *gin.Context) {
 		context.HTML(http.StatusOK, "help.html", nil)

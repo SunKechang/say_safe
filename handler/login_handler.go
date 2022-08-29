@@ -113,6 +113,7 @@ func login(c *gin.Context) {
 
 func logout(c *gin.Context) {
 	res := response.NewResponse()
+	defer c.JSON(res["code"].(int), res)
 	session := sessions.Default(c)
 	session.Clear()
 	err := session.Save()
@@ -120,7 +121,6 @@ func logout(c *gin.Context) {
 		res["code"] = http.StatusInternalServerError
 		res[Message] = "退出失败"
 	}
-	c.JSON(res["code"].(int), res)
 }
 
 func signup(c *gin.Context) {

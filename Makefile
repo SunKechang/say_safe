@@ -13,7 +13,7 @@ build:
 	docker build -f Dockerfile -t saysafe .
 
 run:
-	docker run -d -it --network=host --name safeweb saysafe:latest
+	docker run -d -it --network=host --name safeweb -v /opt/safeweb:/app -v /etc/localtime:/etc/localtime saysafe:latest
 
 mysql-start:
 

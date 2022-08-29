@@ -1,8 +1,7 @@
-D:/GolangProjects/safeWeb/main.go:75 server started on: [[:8080]]
-[GIN] 2022/08/28 - 21:54:56 | 200 |         294µs |             ::1 | GET      "/page/help"
-[GIN] 2022/08/28 - 21:54:56 | 304 |      1.7176ms |             ::1 | GET      "/static/images/last.jpg"
-[GIN] 2022/08/28 - 21:54:59 | 200 |         297µs |             ::1 | GET      "/page/index"
-[GIN] 2022/08/28 - 21:55:00 | 200 |       673.8µs |             ::1 | GET      "/page/help"
-D:/GolangProjects/safeWeb/main.go:84 [main],app stopping,receive:[interrupt]
-D:/GolangProjects/safeWeb/main.go:77 listen: [http: Server closed]
-D:/GolangProjects/safeWeb/main.go:94 [main],app stopped,receive:[interrupt]
+D:/GolangProjects/safeWeb/main.go:80 server started on: [[:8080]]
+[GIN] 2022/08/29 - 09:42:13 | 302 |            0s |             ::1 | GET      "/page/safe"
+[GIN] 2022/08/29 - 09:42:13 | 200 |      1.4541ms |             ::1 | GET      "/page/index"
+[GIN] 2022/08/29 - 09:42:14 | 200 |            0s |             ::1 | GET      "/page/index"
+D:/GolangProjects/safeWeb/main.go:89 [main],app stopping,receive:[interrupt]
+D:/GolangProjects/safeWeb/main.go:82 listen: [http: Server closed]
+D:/GolangProjects/safeWeb/main.go:99 [main],app stopped,receive:[interrupt]

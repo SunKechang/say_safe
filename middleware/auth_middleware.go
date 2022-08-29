@@ -11,7 +11,7 @@ func AuthMiddleware(c *gin.Context) {
 	session := sessions.Default(c)
 	role := session.Get(handler.Role)
 	if role == nil {
-		c.HTML(http.StatusOK, "index.html", nil)
+		c.Redirect(http.StatusFound, "/page/index")
 		c.Abort()
 		return
 	}
