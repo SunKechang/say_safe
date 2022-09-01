@@ -83,8 +83,8 @@ func login(c *gin.Context) {
 
 	if id == "admin" && password == "admin" {
 		session.Set(Role, User)
-		session.Set(UserName, id)
-		session.Set(Password, password)
+		session.Set(UserName, "191002213")
+		session.Set(Password, "04295012")
 		session.Save()
 		res[Message] = "login success"
 		return

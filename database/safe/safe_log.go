@@ -48,10 +48,12 @@ func (p *SafeLogDao) GetUUID() string {
 	return util.NewShortIDString(SafeLogPrefix)
 }
 
-func (p *SafeLogDao) GetSafeLog(userId string) ([]SafeLog, error) {
+func (p *SafeLogDao) GetSafeLog(userId string, pageNo, pageSize int) ([]SafeLog, error) {
 	q := p.GetDB().Table(database.SafeLogTableName)
 	q = q.Where("user_id = ?", userId)
 	q = q.Where("is_delete = ?", database.Undeleted)
+	offset := (pageNo - 1) * pageSize
+	q = q.Offset(offset).Limit(pageSize)
 	res := make([]SafeLog, 0)
 	q.Scan(&res)
 	return res, q.Error

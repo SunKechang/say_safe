@@ -28,7 +28,7 @@ func NewSafeService() SafeService {
 
 func (p *SafeService) SendSafe(username, password string) (string, error) {
 	safeJobDao := safe.NewSafeJobDao()
-	safeJob, err := safeJobDao.GetJobByUserID(username)
+	safeJob, _, err, _ := safeJobDao.GetJobByUserID(username)
 	if err != nil {
 		return "", err
 	}
@@ -273,18 +273,22 @@ func (p *SafeService) AddSafe(username string, safeInfo []byte) error {
 	return nil
 }
 
-func (p *SafeService) GetSafe(username string) (string, error) {
+func (p *SafeService) GetSafe(username string) (string, int64, error) {
 	jobDao := safe.NewSafeJobDao()
-	safeInfo, err := jobDao.GetJobByUserID(username)
+	safeInfo, count, err, err2 := jobDao.GetJobByUserID(username)
 	if err != nil {
 		log.Log(fmt.Sprintf("GetSafe failed: %s\n", err))
-		return "", err
+		return "", 0, err
+	}
+	if err2 != nil {
+		log.Log(fmt.Sprintf("GetSafe failed: %s\n", err2))
+		return "", 0, err2
 	}
 	filePath := path.Join(flag.SafeRoot, safeInfo.Path)
 	content, err := ioutil.ReadFile(filePath)
 	if err != nil {
 		log.Log(fmt.Sprintf("GetSafe failed: %s\n", err))
-		return "", err
+		return "", 0, err
 	}
-	return string(content), nil
+	return string(content), count, nil
 }

@@ -8,6 +8,7 @@ import (
 	"gin-test/util/log"
 	"github.com/gin-gonic/gin"
 	"io"
+	"strconv"
 )
 
 func SaySafe() func(*gin.Context) {
@@ -78,12 +79,13 @@ func getSafe(c *gin.Context) {
 	temp, _ := c.Get(UserName)
 	username := temp.(string)
 	service := safe.NewSafeService()
-	content, err := service.GetSafe(username)
+	content, count, err := service.GetSafe(username)
 	if err != nil {
 		res[Message] = err.Error()
 		return
 	}
 	res["data"] = content
+	res["count"] = count
 }
 
 func getSafeList(c *gin.Context) {
@@ -92,8 +94,21 @@ func getSafeList(c *gin.Context) {
 
 	temp, _ := c.Get(UserName)
 	username := temp.(string)
+
+	noTemp := c.DefaultQuery("pageNo", "1")
+	sizeTemp := c.DefaultQuery("pageSize", "20")
+	pageNo, err := strconv.Atoi(noTemp)
+	if err != nil || pageNo < 1 {
+		res[Message] = "传入参数格式有误"
+		return
+	}
+	pageSize, err := strconv.Atoi(sizeTemp)
+	if err != nil || pageSize < 0 {
+		res[Message] = "传入参数格式有误"
+		return
+	}
 	dao := safe2.NewSafeLogDao()
-	content, err := dao.GetSafeLog(username)
+	content, err := dao.GetSafeLog(username, pageNo, pageSize)
 	if err != nil {
 		res[Message] = err.Error()
 		return

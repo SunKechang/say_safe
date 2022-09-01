@@ -49,12 +49,18 @@ func (p *SafeJobDao) CreateSafeJob(job *SafeJob) error {
 	return q.Error
 }
 
-func (p *SafeJobDao) GetJobByUserID(userId string) (*SafeJob, error) {
+func (p *SafeJobDao) GetJobByUserID(userId string) (*SafeJob, int64, error, error) {
 	q := p.GetDB().Table(database.SafeJobTableName)
 	res := &SafeJob{}
 	q = q.Where("user_id = ?", userId)
 	q.Where("is_delete = ?", database.Undeleted).First(&res)
-	return res, q.Error
+
+	count := int64(0)
+	q2 := p.GetDB().Table(database.SafeLogTableName)
+	q2 = q2.Where("user_id = ?", userId)
+	q2 = q2.Where("is_delete = ?", database.Undeleted)
+	q2.Count(&count)
+	return res, count, q.Error, q2.Error
 }
 
 func (p *SafeJobDao) GetExistingJob() ([]SafeJobInfo, error) {

@@ -1,7 +1,4 @@
 D:/GolangProjects/safeWeb/main.go:80 server started on: [[:8080]]
-[GIN] 2022/08/29 - 09:42:13 | 302 |            0s |             ::1 | GET      "/page/safe"
-[GIN] 2022/08/29 - 09:42:13 | 200 |      1.4541ms |             ::1 | GET      "/page/index"
-[GIN] 2022/08/29 - 09:42:14 | 200 |            0s |             ::1 | GET      "/page/index"
-D:/GolangProjects/safeWeb/main.go:89 [main],app stopping,receive:[interrupt]
-D:/GolangProjects/safeWeb/main.go:82 listen: [http: Server closed]
-D:/GolangProjects/safeWeb/main.go:99 [main],app stopped,receive:[interrupt]
+[GIN] 2022/09/01 - 09:53:39 | 200 |     66.1736ms |             ::1 | POST     "/login"
+D:/GolangProjects/safeWeb/service/safe/safe.go:290 GetSafe failed: open safeFiles/191002213/191002213.txt: The system cannot find the path specified.
+[GIN] 2022/09/01 - 09:53:50 | 200 |    147.4005ms |             ::1 | GET      "/get_safe"
