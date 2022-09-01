@@ -20,3 +20,4 @@ mysql-start:
 
 update-index:
 	git pull origin master
+	cp -r ./templates/ /opt/safeweb/
