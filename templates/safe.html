@@ -45,12 +45,16 @@
                     </tbody>
                 </table>
             </div>
+            <div class="nes-field item" id="pageDiv">
+                <button type="button" class="nes-btn">1</button>
+            </div>
         </section>
     </div>
 </body>
 </html>
 
 <script>
+    let pageSize = 20
     init()
     getSafeList()
 
@@ -60,10 +64,23 @@
         sign.open("GET", reqUrl)
         sign.onload = function () {
             let res_data = JSON.parse(sign.responseText)
-            if (res_data.code === 200 && res_data.data !== "") {
-                document.getElementById('textarea_field').value = res_data.data
-                document.getElementById('addSafeHeader').innerText = "更新报平安任务"
-                document.getElementById('addButton').innerText = "更新"
+            if (res_data.code === 200) {
+                if (res_data.data !== "") {
+                    document.getElementById('textarea_field').value = res_data.data
+                    document.getElementById('addSafeHeader').innerText = "更新报平安任务"
+                    document.getElementById('addButton').innerText = "更新"
+                }
+                if (res_data.count !== null) {
+                    let str = ""
+                    let pageNo = res_data.count/pageSize
+                    let i = 0
+                    for(i=1;i<=pageNo;i++) {
+                        str += "<button type=\"button\" class=\"nes-btn\">" + i + "</button>"
+                    }
+                    let pageDiv = document.getElementById('pageDiv')
+                    pageDiv.innerHTML = str
+                }
+
             }
         }
         sign.send()
