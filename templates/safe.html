@@ -45,9 +45,6 @@
                     </tbody>
                 </table>
             </div>
-            <div class="nes-field item" id="pageDiv">
-                <button type="button" class="nes-btn">1</button>
-            </div>
         </section>
     </div>
 </body>
@@ -56,7 +53,7 @@
 <script>
     let pageSize = 20
     init()
-    getSafeList()
+    getSafeList(1, pageSize)
 
     function init() {
         let sign = new XMLHttpRequest()
@@ -74,8 +71,9 @@
                     let str = ""
                     let pageNo = res_data.count/pageSize
                     let i = 0
-                    for(i=1;i<=pageNo;i++) {
-                        str += "<button type=\"button\" class=\"nes-btn\">" + i + "</button>"
+                    for(i=1;i<=(pageNo+1);i++) {
+                        str += "<button type=\"button\" class=\"nes-btn\" onclick='getSafeList(" + i + "," + pageSize + ")'>"
+                            + i + "</button>"
                     }
                     let pageDiv = document.getElementById('pageDiv')
                     pageDiv.innerHTML = str
