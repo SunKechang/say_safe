@@ -21,3 +21,4 @@ mysql-start:
 update-index:
 	git pull origin master
 	cp -r ./templates/ /opt/safeweb/
+	scp -rf ./templates/ root@39.107.25.37:/opt/safeweb/

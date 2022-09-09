@@ -105,9 +105,9 @@
         xmr.send(content);
     }
 
-    function getSafeList() {
+    function getSafeList(pageNo, pageSize) {
         let xmr = new XMLHttpRequest()
-        let reqUrl = "/get_safe_list"
+        let reqUrl = "/get_safe_list?pageNo=" + pageNo + "&pageSize=" + pageSize
         xmr.open("GET", reqUrl)
         xmr.onload = function () {
             let res_data = JSON.parse(xmr.responseText)
