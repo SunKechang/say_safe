@@ -56,3 +56,20 @@ delete from user where id='191002213';
 insert into `safe_log` (`id`, `user_id`, `job_id`, `is_delete`, `result`)
 VALUES ('1', '191002213', '1', '0', '您今天已经申请了，不需要再次申请了');
 
+CREATE TABLE IF NOT EXISTS `Score` (
+                                          `学号` varchar(64) NOT NULL COMMENT '唯一标识',
+                                          `成绩` varchar(64) NOT NULL COMMENT '学号外键',
+                                          `课程号` varchar(64) NOT NULL COMMENT '发送的消息被存储的文件的路径'
+)ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT 'Score';
+CREATE TABLE IF NOT EXISTS `Student` (
+                                       `学号` varchar(64) NOT NULL COMMENT '唯一标识',
+                                       `姓名` varchar(64) NOT NULL COMMENT '学号外键',
+                                       `性别` varchar(64) NOT NULL COMMENT '发送的消息被存储的文件的路径'
+)ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT 'Student';
+
+SELECT MAX(Student.姓名) as 姓名, SUM(Score.成绩) as 总分  FROM Score
+    JOIN Student ON Score.`学号`=Student.`学号`
+                            GROUP BY Student.学号 HAVING COUNT(Student.姓名) = 1;
+
+
+SELECT IF(length(null), '1', '-1');

@@ -2,11 +2,15 @@ package handler
 
 import (
 	"bytes"
+	"crypto/rand"
+	"crypto/rsa"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"gin-test/database"
 	"gin-test/database/user"
 	"gin-test/handler/response"
+	"gin-test/util/flag"
 	"gin-test/util/log"
 	"github.com/PuerkitoBio/goquery"
 	"github.com/dop251/goja"
@@ -69,10 +73,22 @@ func login(c *gin.Context) {
 	temp, err := io.ReadAll(c.Request.Body)
 	if err != nil {
 		log.Log(fmt.Sprintf("[LOGIN] failed: %s\n", err.Error()))
+		res["code"] = http.StatusBadRequest
+		res[Message] = "传入参数有误"
+		return
 	}
 	//转化为LoginRequest结构
 	body := LoginRequest{}
 	err = json.Unmarshal(temp, &body)
+	base64Pass, err := base64.StdEncoding.DecodeString(body.Password)
+	if err != nil {
+		log.Logger("parse password failed: %s\n", err)
+		res["code"] = http.StatusBadRequest
+		res[Message] = "传入参数有误"
+		return
+	}
+	strTemp, err := rsa.DecryptPKCS1v15(rand.Reader, flag.PriKey, base64Pass)
+	body.Password = string(strTemp)
 	if err != nil {
 		res["code"] = http.StatusBadRequest
 		res[Message] = "传入参数有误"

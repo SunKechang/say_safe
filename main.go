@@ -28,8 +28,12 @@ const (
 
 func main() {
 	database.Init()
+	err := handler.Init()
+	if err != nil {
+		return
+	}
 	apps := Init()
-	err := Start(apps)
+	err = Start(apps)
 	if err != nil {
 		log.Log(fmt.Sprintf("start failed: %s\n", err))
 	}
@@ -61,11 +65,14 @@ func main() {
 	r.POST("/login", handler.Login())
 	r.GET("/hello", handler.GetHello())
 	r.POST("/hello", handler.Hello())
+	r.GET("/get_public", handler.GetPublic())
 	middleware.InitMiddlewares(r)
 	r.POST("/logout", handler.Logout())
 
 	r.POST("/add_safe", handler.AddSafe())
+	r.POST("/v1/add_safe", handler.AddSafe1())
 	r.POST("/say_safe", handler.SaySafe())
+	r.POST("/v1/say_safe", handler.SaySafe1())
 	r.GET("/get_safe", handler.GetSafe())
 	r.GET("/get_safe_list", handler.GetSafeList())
 	r.GET("/page/safe", func(context *gin.Context) {
@@ -101,7 +108,7 @@ func main() {
 
 func Init() (apps []App) {
 	newScanner := scanner.NewScanner()
-	newScanner.AddService("0 0 6 * * ?", job.NewSafeJobService())
+	newScanner.AddService("0 0 5 * * ?", job.NewSafeJobService())
 
 	apps = append(apps, newScanner)
 	return apps

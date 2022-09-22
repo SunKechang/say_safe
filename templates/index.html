@@ -42,7 +42,9 @@
         </div>
 </body>
 </html>
+<script src="/static/JsEncrypt.js"></script>
 <script>
+    let public_key = ""
     function toBeilin() {
         document.location.href = 'http://cas.bjfu.edu.cn/cas/login?service=https%3A%2F%2Fs.bjfu.edu.cn%2Ftp_fp%2Findex.jsp'
     }
@@ -65,6 +67,23 @@
     }
 
     function login() {
+        let getPub = new XMLHttpRequest()
+        let pubUrl = "/get_public"
+        getPub.open("GET", pubUrl, false)
+        getPub.onload = function () {
+            let res_data = JSON.parse(getPub.responseText)
+            if (res_data.code === 200) {
+                public_key = res_data.data
+                console.log(public_key)
+            } else {
+                alert("接口异常，请明天再试")
+            }
+        }
+        getPub.send();
+        if (public_key === "") {
+            return
+        }
+
         let sign = new XMLHttpRequest()
         let reqUrl = "/login"
         sign.open("POST", reqUrl)
@@ -78,7 +97,10 @@
         }
         let name = document.getElementById('name_field').value
         let password = document.getElementById('password_field').value
-        const body = JSON.stringify({ username: name, password: password});
+        let encrypt = new JSEncrypt();
+        encrypt.setPublicKey(public_key);
+        let encrypted = encrypt.encrypt(password);
+        const body = JSON.stringify({ username: name, password: encrypted});
         sign.send(body);
     }
 

@@ -23,6 +23,18 @@ func AddSafe() func(*gin.Context) {
 	}
 }
 
+func AddSafe1() func(*gin.Context) {
+	return func(context *gin.Context) {
+		addSafe1(context)
+	}
+}
+
+func SaySafe1() func(*gin.Context) {
+	return func(context *gin.Context) {
+		saySafe1(context)
+	}
+}
+
 func GetSafe() func(*gin.Context) {
 	return func(context *gin.Context) {
 		getSafe(context)
@@ -114,4 +126,36 @@ func getSafeList(c *gin.Context) {
 		return
 	}
 	res["data"] = content
+}
+
+func addSafe1(c *gin.Context) {
+	res := response.NewResponse()
+	defer c.JSON(res["code"].(int), res)
+
+	temp, _ := c.Get(UserName)
+	username := temp.(string)
+
+	service := safe.NewSafeService()
+	err := service.AddSafe1(username)
+	if err != nil {
+		res[Message] = err.Error()
+		return
+	}
+	res[Message] = "添加成功"
+}
+
+func saySafe1(c *gin.Context) {
+	res := response.NewResponse()
+	temp, _ := c.Get(UserName)
+	username := temp.(string)
+	temp, _ = c.Get(Password)
+	password := temp.(string)
+	safeService := safe.NewSafeService()
+	safeRes, err := safeService.SendSafe1(username, password)
+	if err != nil {
+		res[Message] = err.Error()
+	} else {
+		res[Message] = safeRes
+	}
+	c.JSON(res["code"].(int), res)
 }

@@ -10,10 +10,6 @@
     <div class="container">
         <section class="nes-container with-title">
             <h3 id="addSafeHeader">添加报平安任务</h3>
-            <div class="nes-field item">
-                <label for="textarea_field">报平安内容</label>
-                <textarea id="textarea_field" class="nes-textarea" style="height: 10rem"></textarea>
-            </div>
             <div class="nes-field" style="margin-top: 1rem; display: flex; flex-direction: row">
                 <div class="nes-field">
                     <button type="button" class="nes-btn is-success" style="margin-right: 1rem"
@@ -64,11 +60,6 @@
         sign.onload = function () {
             let res_data = JSON.parse(sign.responseText)
             if (res_data.code === 200) {
-                if (res_data.data !== "") {
-                    document.getElementById('textarea_field').value = res_data.data
-                    document.getElementById('addSafeHeader').innerText = "更新报平安任务"
-                    document.getElementById('addButton').innerText = "更新"
-                }
                 if (res_data.count !== null) {
                     let str = ""
                     let pageNo = res_data.count/pageSize
@@ -87,9 +78,8 @@
     }
     function addSafe() {
         document.getElementById('addButton').disabled = true
-        let content = document.getElementById('textarea_field').value
         let xmr = new XMLHttpRequest()
-        let reqUrl = "/add_safe"
+        let reqUrl = "/v1/add_safe"
         xmr.open("POST", reqUrl)
         xmr.onload = function () {
             let res_data = JSON.parse(xmr.responseText)
@@ -102,7 +92,7 @@
             document.getElementById('addButton').removeAttribute("disabled")
             init()
         }
-        xmr.send(content);
+        xmr.send();
     }
 
     function getSafeList(pageNo, pageSize) {
@@ -131,11 +121,10 @@
 
     function saySafe() {
         let xmr = new XMLHttpRequest()
-        let reqUrl = "/say_safe"
+        let reqUrl = "/v1/say_safe"
         xmr.open("POST", reqUrl)
         xmr.onload = function () {
             let res_data = JSON.parse(xmr.responseText)
-            console.log(res_data)
             if (res_data.code === 200) {
                 alert(res_data.message)
             }
