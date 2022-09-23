@@ -13,7 +13,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
-	"os"
 	"path"
 	"strconv"
 	"strings"
@@ -27,69 +26,8 @@ type SafeService struct {
 func NewSafeService() SafeService {
 	return SafeService{}
 }
-
-func (p *SafeService) SendSafe(username, password string) (string, error) {
-	safeJobDao := safe.NewSafeJobDao()
-	safeJob, _, err, _ := safeJobDao.GetJobByUserID(username)
-	if err != nil {
-		return "", err
-	}
-
-	safeLogDao := safe.NewSafeLogDao()
-	safeLog := &safe.SafeLog{
-		UserId: safeJob.UserId,
-		JobId:  safeJob.ID,
-	}
-	defer func() {
-		err := safeLogDao.CreateLog(safeLog)
-		if err != nil {
-			log.Log(fmt.Sprintf("sendSafe failed: %s\n", err))
-			return
-		}
-	}()
-	//todo 1.获取登录界面，拿到lt
-	ltCode, sessionId, err := p.getLtSession()
-	if err != nil {
-		safeLog.Success = 0
-		log.Log(fmt.Sprintf("sendSafe failed: %s\n", err))
-		return "", err
-	}
-	//todo 2.通过lt，user，password，基于des加密计算得到rsa
-	rsa, err := p.getRsa(username, password, ltCode)
-	if err != nil {
-		safeLog.Success = 0
-		log.Log(fmt.Sprintf("sendSafe failed: %s\n", err))
-		return "", err
-	}
-	//todo 3.登录，获取sessionID，route
-	route, sessionId, err := p.getRoute(sessionId, rsa, ltCode, len(username), len(password))
-	if err != nil {
-		safeLog.Success = 0
-		log.Log(fmt.Sprintf("sendSafe failed: %s\n", err))
-		return "", err
-	}
-	//todo 4.读取要发送的表单数据到file
-	log.Log(flag.SafeRoot + safeJob.Path + "\n")
-	file, err := ioutil.ReadFile(path.Join(flag.SafeRoot, safeJob.Path))
-	if err != nil {
-		safeLog.Success = 0
-		log.Log(fmt.Sprintf("sendSafe failed: %s\n", err))
-		return "", err
-	}
-	//todo 5.报平安
-	res, err := p.saySafe(sessionId, route, string(file))
-	if err != nil {
-		safeLog.Success = 0
-		log.Log(fmt.Sprintf("sendSafe failed: %s\n", err))
-		return "", err
-	}
-	safeLog.Success = 1
-	safeLog.Result = string(res)
-	return string(res), nil
-}
-
 func (p *SafeService) getLtSession() (string, string, error) { //获取lt与sessionId
-	connectUrl := "http://cas.bjfu.edu.cn/cas/login?service=https%3A%2F%2Fs.bjfu.edu.cn%2Ftp_fp%2Findex.jsp"
+	connectUrl := "http://cas.bjfu.edu.cn/cas/login?service=https%3A%2F%2Fx.bjfu.edu.cn%2Ftp_up%2F"
 	request, err := http.NewRequest("GET", connectUrl, nil)
 	if err != nil {
 		return "", "", err
@@ -128,9 +66,9 @@ func (p *SafeService) getRsa(user, password, ltCode string) (string, error) { //
 	return fn(word), nil
 }
 
-func (p *SafeService) getRoute(originId, rsa, ltCode string, ul, pl int) (string, string, error) { //获取route与sessionId
+func (p *SafeService) getRoute(originId, rsa, ltCode string, ul, pl int) (string, error) { //获取route与sessionId
 	//由于报平安请求需要访问s.bjfu.cn，而在此之前都是在情趣cas.bjfu.cn，因此需要重新获取sessionId，该sessionId是用于与s.bjfu.cn连接后产生的
-	surl := "http://cas.bjfu.edu.cn/cas/login?service=https%3A%2F%2Fs.bjfu.edu.cn%2Ftp_fp%2Findex.jsp"
+	surl := "http://cas.bjfu.edu.cn/cas/login?service=https%3A%2F%2Fx.bjfu.edu.cn%2Ftp_up%2F"
 	// 用url.values方式构造form-data参数
 	formValues := url.Values{}
 	formValues.Set("rsa", rsa)
@@ -144,7 +82,7 @@ func (p *SafeService) getRoute(originId, rsa, ltCode string, ul, pl int) (string
 	formBytesReader := bytes.NewReader(formDataBytes)
 	request, err := http.NewRequest("POST", surl, formBytesReader)
 	if err != nil {
-		return "", "", err
+		return "", err
 	}
 
 	request.Host = "cas.bjfu.edu.cn"
@@ -155,19 +93,18 @@ func (p *SafeService) getRoute(originId, rsa, ltCode string, ul, pl int) (string
 	request.Header.Set("Connection", "keep-alive")
 	request.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	request.Header.Set("Origin", "http://cas.bjfu.edu.cn")
-	request.Header.Set("Referer", "http://cas.bjfu.edu.cn/cas/login?service=https%3A%2F%2Fs.bjfu.edu.cn%2Ftp_fp%2Findex.jsp")
+	request.Header.Set("Referer", "http://cas.bjfu.edu.cn/cas/login?service=https%3A%2F%2Fx.bjfu.edu.cn%2Ftp_up%2F")
 	request.Header.Set("Upgrade-Insecure-Requests", "1")
 	request.Header.Set("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36")
 	request.Header.Set("Cookie", "JSESSIONID="+originId+"; cas_hash=; Language=zh_CN")
 
 	casResp, err := http.DefaultClient.Do(request)
 	if err != nil {
-		return "", "", err
+		return "", err
 	}
 	defer casResp.Body.Close()
 	sessionId := getSingleCookie(casResp.Request.Response.Request.Response, JSESSIONID)
-	route := getSingleCookie(casResp.Request.Response.Request.Response, "route")
-	return route, sessionId, nil
+	return sessionId, nil
 }
 
 func (p *SafeService) saySafe(sessionId, route, sendInfo string) ([]byte, error) { //报平安请求
@@ -217,64 +154,6 @@ func getSingleCookie(response *http.Response, goalName string) string { //从Coo
 //7.1 目前要做的是自动获取默认提交值，加油！
 //7.5 已经部署到服务器了，自动获取默认值没有完成，就算是了解了大致过程了吧。
 
-func (p *SafeService) AddSafe(username string, safeInfo []byte) error {
-	// todo 将用户传递的报平安内容保存到root/学号/学号.txt
-	dirPath := path.Join(flag.SafeRoot, username)
-	if _, err := os.Stat(dirPath); err != nil {
-		if os.IsNotExist(err) {
-			err := os.Mkdir(dirPath, os.ModePerm)
-			if err != nil {
-				log.Logger("AddSafe create dir failed: %s\n", err.Error())
-				return err
-			}
-		} else {
-			log.Logger("AddSafe create dir failed: %s\n", err.Error())
-			return err
-		}
-	}
-
-	relaPath := path.Join(username, username+".txt")
-	filePath := path.Join(flag.SafeRoot, relaPath)
-	var file *os.File
-	if _, err := os.Stat(filePath); err != nil {
-		file, err = os.Create(filePath)
-		if err != nil {
-			log.Log(fmt.Sprintf("AddSafe failed: %s\n", err))
-			return err
-		}
-	} else {
-		file, err = os.OpenFile(filePath, os.O_RDWR, 0644)
-		if err != nil {
-			log.Log(fmt.Sprintf("AddSafe failed: %s\n", err))
-			return err
-		}
-	}
-
-	_, err := file.Write(safeInfo)
-	if err != nil {
-		log.Log(fmt.Sprintf("AddSafe failed: %s\n", err))
-		return err
-	}
-
-	safeJobDao := safe.NewSafeJobDao()
-	err = safeJobDao.DeleteJobsByUserID(username)
-	if err != nil {
-		log.Log(fmt.Sprintf("AddSafe failed: %s\n", err))
-		return err
-	}
-
-	newJob := safe.SafeJob{
-		UserId: username,
-		Path:   relaPath,
-	}
-	err = safeJobDao.CreateSafeJob(&newJob)
-	if err != nil {
-		log.Log(fmt.Sprintf("AddSafe failed: %s\n", err))
-		return err
-	}
-	return nil
-}
-
 func (p *SafeService) GetSafe(username string) (string, int64, error) {
 	jobDao := safe.NewSafeJobDao()
 	safeInfo, count, err, err2 := jobDao.GetJobByUserID(username)
@@ -286,13 +165,7 @@ func (p *SafeService) GetSafe(username string) (string, int64, error) {
 		log.Log(fmt.Sprintf("GetSafe failed: %s\n", err2))
 		return "", 0, err2
 	}
-	filePath := path.Join(flag.SafeRoot, safeInfo.Path)
-	content, err := ioutil.ReadFile(filePath)
-	if err != nil {
-		log.Log(fmt.Sprintf("GetSafe failed: %s\n", err))
-		return "", 0, err
-	}
-	return string(content), count, nil
+	return safeInfo.UpdateTime.String(), count, nil
 }
 
 func (p *SafeService) AddSafe1(username string) error {
@@ -349,14 +222,16 @@ func (p *SafeService) SendSafe1(username, password string) (string, error) {
 		return "", err
 	}
 	//todo 3.登录，获取sessionID，route
-	route, sessionId, err := p.getRoute(sessionId, rsa, ltCode, len(username), len(password))
+	sessionId, err = p.getRoute(sessionId, rsa, ltCode, len(username), len(password))
 	if err != nil {
 		safeLog.Success = 0
 		log.Log(fmt.Sprintf("sendSafe failed: %s\n", err))
 		return "", err
 	}
+	log.Log(fmt.Sprintf("sendSafe res: %s\n", sessionId))
 	//todo 4.获取token
 	token, err := p.getToken(sessionId)
+	log.Log(fmt.Sprintf("token1 res: %s\n", token))
 	if err != nil {
 		safeLog.Success = 0
 		log.Log(fmt.Sprintf("getToken failed: %s\n", err))
@@ -391,7 +266,6 @@ func (p *SafeService) SendSafe1(username, password string) (string, error) {
 		return "", err
 	}
 	safeLog.Success = 1
-	log.Logger("route: %s\n", route)
 	safeLog.Result = say + ", " + add
 	return add, nil
 }
@@ -467,6 +341,7 @@ func (p *SafeService) getForm(sessionId, id string) (*QuesForm, error) {
 	if err != nil {
 		return nil, err
 	}
+	log.Logger("body: %s\n", body)
 	res := QuesForm{}
 	err = json.Unmarshal(body, &res)
 	if err != nil {

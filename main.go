@@ -69,9 +69,7 @@ func main() {
 	middleware.InitMiddlewares(r)
 	r.POST("/logout", handler.Logout())
 
-	r.POST("/add_safe", handler.AddSafe())
 	r.POST("/v1/add_safe", handler.AddSafe1())
-	r.POST("/say_safe", handler.SaySafe())
 	r.POST("/v1/say_safe", handler.SaySafe1())
 	r.GET("/get_safe", handler.GetSafe())
 	r.GET("/get_safe_list", handler.GetSafeList())

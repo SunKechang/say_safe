@@ -58,7 +58,7 @@ func (p *SafeJob) Exec() {
 		return
 	}
 	//todo 3.登录，获取sessionID，route
-	route, sessionId, err := p.getRoute(sessionId, rsa, ltCode, len(p.JobInfo.UserId), len(p.JobInfo.Password))
+	sessionId, err = p.getRoute(sessionId, rsa, ltCode, len(p.JobInfo.UserId), len(p.JobInfo.Password))
 	if err != nil {
 		safeLog.Success = 0
 		log.Log(fmt.Sprintf("sendSafe failed: %s\n", err))
@@ -100,13 +100,12 @@ func (p *SafeJob) Exec() {
 		return
 	}
 	safeLog.Success = 1
-	log.Logger("route: %s\n", route)
 	safeLog.Result = say + ", " + add
 	return
 }
 
 func (p *SafeJob) getLtSession() (string, string, error) { //获取lt与sessionId
-	connectUrl := "http://cas.bjfu.edu.cn/cas/login?service=https%3A%2F%2Fs.bjfu.edu.cn%2Ftp_fp%2Findex.jsp"
+	connectUrl := "http://cas.bjfu.edu.cn/cas/login?service=https%3A%2F%2Fx.bjfu.edu.cn%2Ftp_up%2F"
 	request, err := http.NewRequest("GET", connectUrl, nil)
 	if err != nil {
 		return "", "", err
@@ -145,9 +144,9 @@ func (p *SafeJob) getRsa(user, password, ltCode string) (string, error) { //计�
 	return fn(word), nil
 }
 
-func (p *SafeJob) getRoute(originId, rsa, ltCode string, ul, pl int) (string, string, error) { //获取route与sessionId
+func (p *SafeJob) getRoute(originId, rsa, ltCode string, ul, pl int) (string, error) { //获取route与sessionId
 	//由于报平安请求需要访问s.bjfu.cn，而在此之前都是在情趣cas.bjfu.cn，因此需要重新获取sessionId，该sessionId是用于与s.bjfu.cn连接后产生的
-	surl := "http://cas.bjfu.edu.cn/cas/login?service=https%3A%2F%2Fs.bjfu.edu.cn%2Ftp_fp%2Findex.jsp"
+	surl := "http://cas.bjfu.edu.cn/cas/login?service=https%3A%2F%2Fx.bjfu.edu.cn%2Ftp_up%2F"
 	// 用url.values方式构造form-data参数
 	formValues := url.Values{}
 	formValues.Set("rsa", rsa)
@@ -161,7 +160,7 @@ func (p *SafeJob) getRoute(originId, rsa, ltCode string, ul, pl int) (string, st
 	formBytesReader := bytes.NewReader(formDataBytes)
 	request, err := http.NewRequest("POST", surl, formBytesReader)
 	if err != nil {
-		return "", "", err
+		return "", err
 	}
 
 	request.Host = "cas.bjfu.edu.cn"
@@ -172,19 +171,18 @@ func (p *SafeJob) getRoute(originId, rsa, ltCode string, ul, pl int) (string, st
 	request.Header.Set("Connection", "keep-alive")
 	request.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	request.Header.Set("Origin", "http://cas.bjfu.edu.cn")
-	request.Header.Set("Referer", "http://cas.bjfu.edu.cn/cas/login?service=https%3A%2F%2Fs.bjfu.edu.cn%2Ftp_fp%2Findex.jsp")
+	request.Header.Set("Referer", "http://cas.bjfu.edu.cn/cas/login?service=https%3A%2F%2Fx.bjfu.edu.cn%2Ftp_up%2F")
 	request.Header.Set("Upgrade-Insecure-Requests", "1")
 	request.Header.Set("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36")
 	request.Header.Set("Cookie", "JSESSIONID="+originId+"; cas_hash=; Language=zh_CN")
 
 	casResp, err := http.DefaultClient.Do(request)
 	if err != nil {
-		return "", "", err
+		return "", err
 	}
 	defer casResp.Body.Close()
 	sessionId := getSingleCookie(casResp.Request.Response.Request.Response, JSESSIONID)
-	route := getSingleCookie(casResp.Request.Response.Request.Response, "route")
-	return route, sessionId, nil
+	return sessionId, nil
 }
 
 func getSingleCookie(response *http.Response, goalName string) string { //从Cookie中查找想要的参数对应的值，JSESSIONID，route
